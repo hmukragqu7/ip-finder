@@ -59,16 +59,36 @@ const lnkOsm = document.getElementById('lnk-osm');
 // Tab elements and wrappers
 const tabIp = document.getElementById('tab-ip');
 const tabPhone = document.getElementById('tab-phone');
+const tabTower = document.getElementById('tab-tower');
+
 const formIpWrapper = document.getElementById('form-ip-wrapper');
 const formPhoneWrapper = document.getElementById('form-phone-wrapper');
+const formTowerWrapper = document.getElementById('form-tower-wrapper');
+
 const inputIpTarget = document.getElementById('input-ip-target');
 const btnSearchIp = document.getElementById('btn-search-ip');
+
 const inputPhoneTarget = document.getElementById('input-phone-target');
 const btnSearchPhone = document.getElementById('btn-search-phone');
+
+const inputTowerMcc = document.getElementById('input-tower-mcc');
+const inputTowerMnc = document.getElementById('input-tower-mnc');
+const inputTowerLac = document.getElementById('input-tower-lac');
+const inputTowerCid = document.getElementById('input-tower-cid');
+const btnSearchTower = document.getElementById('btn-search-tower');
 
 const ipCard = document.getElementById('ip-card');
 const comparisonCard = document.getElementById('comparison-card');
 const gpsCard = document.getElementById('gps-card');
+const phoneCard = document.getElementById('phone-card');
+const towerCard = document.getElementById('tower-card');
+
+// Tower details DOM elements
+const towerPair = document.getElementById('tower-pair');
+const towerLacVal = document.getElementById('tower-lac-val');
+const towerCidVal = document.getElementById('tower-cid-val');
+const towerCoordsVal = document.getElementById('tower-coords-val');
+const btnFocusTower = document.getElementById('btn-focus-tower');
 
 // Phone tracking DOM elements
 const phoneCard = document.getElementById('phone-card');
