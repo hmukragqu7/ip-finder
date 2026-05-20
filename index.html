@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   
   <!-- Main Stylesheet -->
-  <script type="module" crossorigin src="/ip-finder/assets/index-BeZG86j3.js"></script>
+  <script type="module" crossorigin src="/ip-finder/assets/index-DHqx5n9y.js"></script>
   <link rel="stylesheet" crossorigin href="/ip-finder/assets/index-gge_m30k.css">
 </head>
 <body>
@@ -61,6 +61,7 @@
           <div class="lookup-tabs">
             <button class="tab-btn active" id="tab-ip">IP Lookup</button>
             <button class="tab-btn" id="tab-phone">Phone Metadata</button>
+            <button class="tab-btn" id="tab-tower">Cell Tower</button>
           </div>
 
           <!-- IP Lookup Form -->
@@ -79,6 +80,18 @@
               <button class="btn-search" id="btn-search-phone">RESOLVE</button>
             </div>
             <span class="input-helper">Returns country code, carrier registry, and dialing properties.</span>
+          </div>
+
+          <!-- Cell Tower Form -->
+          <div class="lookup-form-wrapper hidden" id="form-tower-wrapper">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 0.5rem;">
+              <input type="number" id="input-tower-mcc" placeholder="MCC (e.g. 404)" class="form-input" style="padding: 0.5rem;">
+              <input type="number" id="input-tower-mnc" placeholder="MNC (e.g. 20)" class="form-input" style="padding: 0.5rem;">
+              <input type="number" id="input-tower-lac" placeholder="LAC/TAC" class="form-input" style="padding: 0.5rem;">
+              <input type="number" id="input-tower-cid" placeholder="CID/ECI" class="form-input" style="padding: 0.5rem;">
+            </div>
+            <button class="btn-search" id="btn-search-tower" style="width: 100%; padding: 0.6rem;">LOCATE CELL TOWER</button>
+            <span class="input-helper" style="margin-top: 0.25rem; display: block;">Locate specific physical base station cell antennas.</span>
           </div>
         </div>
 
@@ -257,6 +270,44 @@
             <p class="helper-text-disclaimer">
               <strong>Simulated Network Telemetry:</strong> Precise live GPS hardware queries on remote mobile devices require active, client-consented authentication. This interface displays country registry records, E.164 dial codes, and simulates carrier BTS (base station) triangulation routing.
             </p>
+          </div>
+        </div>
+
+        <!-- Cell Tower Details Card -->
+        <div class="card detail-card hidden" id="tower-card">
+          <div class="card-header border-indigo">
+            <div class="title-with-icon">
+              <svg class="icon icon-indigo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-indigo);">
+                <path d="M12 2L2 22h20L12 2z"></path>
+                <circle cx="12" cy="17" r="1"></circle>
+              </svg>
+              <h2>Cell Tower Registry</h2>
+            </div>
+            <span class="pill pill-indigo" style="background-color: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.25); color: var(--accent-indigo);" id="tower-accuracy-pill">Database Query</span>
+          </div>
+          
+          <div class="card-content">
+            <div class="details-grid margin-bottom-sm">
+              <div class="detail-item">
+                <span class="detail-label">MCC-MNC Pair</span>
+                <span class="detail-val" id="tower-pair">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Area Code (LAC)</span>
+                <span class="detail-val" id="tower-lac-val">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Cell ID (CID)</span>
+                <span class="detail-val" id="tower-cid-val">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Resolved Coordinates</span>
+                <span class="detail-val text-green" id="tower-coords-val">—</span>
+              </div>
+            </div>
+            <div class="action-buttons-row" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+              <button class="btn-action" id="btn-focus-tower" style="flex: 1;" disabled>Focus on Map</button>
+            </div>
           </div>
         </div>
 
