@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoPulse AI | Precision IP & Geolocation Engine</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <!-- Main Stylesheet -->
+  <script type="module" crossorigin src="/ip-finder/assets/index-7Fv_2Q-J.js"></script>
+  <link rel="stylesheet" crossorigin href="/ip-finder/assets/index-gge_m30k.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Decorative background glow elements -->
+    <div class="glow-bg-1"></div>
+    <div class="glow-bg-2"></div>
+    <div class="glow-bg-3"></div>
+
+    <!-- Header Section -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="radar-pulse-logo">
+          <div class="ring ring-1"></div>
+          <div class="ring ring-2"></div>
+          <div class="ring ring-3"></div>
+          <div class="core-dot"></div>
+        </div>
+        <div class="logo-text">
+          <h1>GeoPulse <span class="badge-precision">AI</span></h1>
+          <p>Precision Location Verification Engine</p>
+        </div>
+      </div>
+      
+      <div class="network-status">
+        <span class="status-indicator online"></span>
+        <span class="status-text">SYSTEM ACTIVE</span>
+      </div>
+    </header>
+
+    <!-- Main Grid Workspace -->
+    <main class="dashboard-grid" id="main-dashboard-view">
+      
+      <!-- Left side: Analytics & Control Panels -->
+      <section class="control-panel">
+        
+        <!-- Interactive Geolocation Registry Search -->
+        <div class="card info-banner lookup-panel">
+          <h3><span class="sparkle-icon">🔍</span> Multi-Registry Query Protocol</h3>
+          <p class="margin-bottom-sm">
+            Lookup network routing markers for public IP nodes, or inspect carrier registration zones for mobile dial codes.
+          </p>
+          
+          <div class="lookup-tabs">
+            <button class="tab-btn active" id="tab-ip">IP Lookup</button>
+            <button class="tab-btn" id="tab-phone">Phone Metadata</button>
+          </div>
+
+          <!-- IP Lookup Form -->
+          <div class="lookup-form-wrapper" id="form-ip-wrapper">
+            <div class="input-group">
+              <input type="text" id="input-ip-target" placeholder="e.g., 8.8.8.8" class="form-input">
+              <button class="btn-search" id="btn-search-ip">QUERY IP</button>
+            </div>
+            <span class="input-helper">Finds country, city, ISP gateway location.</span>
+          </div>
+
+          <!-- Phone Form -->
+          <div class="lookup-form-wrapper hidden" id="form-phone-wrapper">
+            <div class="input-group">
+              <input type="tel" id="input-phone-target" placeholder="e.g., +1 415 555 2671" class="form-input">
+              <button class="btn-search" id="btn-search-phone">RESOLVE</button>
+            </div>
+            <span class="input-helper">Returns country code, carrier registry, and dialing properties.</span>
+          </div>
+        </div>
+
+
+        <!-- IP Details Card -->
+        <div class="card detail-card" id="ip-card">
+          <div class="card-header border-amber">
+            <div class="title-with-icon">
+              <svg class="icon icon-amber" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+              </svg>
+              <h2>Network IP Geolocation</h2>
+            </div>
+            <span class="pill pill-amber">Est. Accuracy: ±45 km</span>
+          </div>
+          
+          <div class="card-content">
+            <div class="ip-display-box">
+              <span class="label">PUBLIC IP ADDRESS</span>
+              <div class="ip-value-container">
+                <span id="ip-value" class="loading-shimmer">Detecting IP...</span>
+                <button class="btn-copy" id="btn-copy-ip" title="Copy IP">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="detail-label">ISP Provider</span>
+                <span class="detail-val" id="ip-isp">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">AS Number</span>
+                <span class="detail-val" id="ip-asn">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Location (Registry)</span>
+                <span class="detail-val" id="ip-city-country">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Coordinates (IP)</span>
+                <span class="detail-val font-mono" id="ip-coords">—</span>
+              </div>
+            </div>
+
+            <!-- Advanced IP Registry Telemetry -->
+            <div class="details-grid margin-top-sm" style="border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 0.85rem;">
+              <div class="detail-item">
+                <span class="detail-label">Timezone</span>
+                <span class="detail-val" id="ip-timezone">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Local Time (IP)</span>
+                <span class="detail-val font-mono text-cyan" id="ip-local-time">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Current Weather</span>
+                <span class="detail-val text-green" id="ip-weather">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Security Flag</span>
+                <span class="detail-val" id="ip-security">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone Tracking Card -->
+        <div class="card detail-card hidden" id="phone-card">
+          <div class="card-header border-green">
+            <div class="title-with-icon">
+              <svg class="icon icon-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+              <h2>Live Carrier Triangulation</h2>
+            </div>
+            <span class="pill pill-green" id="phone-accuracy-pill">Offline</span>
+          </div>
+          
+          <div class="card-content">
+            <div class="phone-display-box">
+              <span class="label">TARGET PHONE NUMBER</span>
+              <div class="phone-value-container">
+                <span id="phone-value" class="font-mono text-green">—</span>
+                <span class="pill pill-green-glow" id="phone-status-pill">STANDBY</span>
+              </div>
+            </div>
+
+            <!-- Phone Metadata Details -->
+            <div class="details-grid margin-bottom-sm">
+              <div class="detail-item">
+                <span class="detail-label">Network Carrier</span>
+                <span class="detail-val" id="phone-carrier">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Country / Region</span>
+                <span class="detail-val" id="phone-country">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Line Type</span>
+                <span class="detail-val" id="phone-type">—</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Local Time</span>
+                <span class="detail-val" id="phone-local-time">—</span>
+              </div>
+            </div>
+
+            <!-- Triangulation Console & Telemetry -->
+            <div class="console-box">
+              <span class="console-label">SIGNAL DATA LOGS & HLR PINGS</span>
+              <div class="console-output" id="phone-console-logs">
+                <div class="console-line text-muted">&gt; System initialized. Awaiting target input...</div>
+              </div>
+            </div>
+
+            <!-- Signal & Network Telemetry Grid -->
+            <div class="telemetry-grid margin-top-sm">
+              <div class="telem-item">
+                <span class="telem-label">LATENCY</span>
+                <span class="telem-val font-mono" id="phone-latency">—</span>
+              </div>
+              <div class="telem-item">
+                <span class="telem-label">SIGNAL (RSSI)</span>
+                <span class="telem-val font-mono text-green" id="phone-rssi">—</span>
+              </div>
+              <div class="telem-item">
+                <span class="telem-label">DRIFT RADIUS</span>
+                <span class="telem-val font-mono" id="phone-drift">—</span>
+              </div>
+              <div class="telem-item">
+                <span class="telem-label">EST. ACCURACY</span>
+                <span class="telem-val font-mono text-cyan" id="phone-accuracy">—</span>
+              </div>
+            </div>
+
+            <!-- Phone Control buttons -->
+            <div class="action-links-row margin-top-sm" id="phone-actions" style="display: none;">
+              <button class="btn-action" id="btn-phone-recalibrate" style="cursor: pointer;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                <span>Re-ping Carrier</span>
+              </button>
+              <button class="btn-action" id="btn-phone-focus" style="cursor: pointer;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>Focus Device</span>
+              </button>
+            </div>
+            
+            <!-- Live GPS Link Handshake Section -->
+            <div id="live-handshake-area" class="margin-top-md" style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1rem;">
+              <span class="console-label" style="display: block; margin-bottom: 0.5rem; color: var(--accent-green);">🛰️ REAL-TIME GPS TRACKING HANDSHAKE</span>
+              <p class="helper-text-disclaimer" style="margin-top: 0; padding-top: 0; border: none; margin-bottom: 0.75rem;">
+                Since direct carrier GPS pings are restricted, you can track this phone number live by sending them a secure handshake invitation link. Once they open it and authorize location sharing, their physical GPS telemetry will stream directly onto this map in real-time.
+              </p>
+              
+              <button class="btn-activate" id="btn-generate-handshake" style="width: 100%; font-size: 0.75rem; padding: 0.6rem; cursor: pointer; background: rgba(52, 211, 153, 0.1); border: 1px solid rgba(52, 211, 153, 0.3); color: var(--accent-green); border-radius: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s;">
+                Generate Tracking Link
+              </button>
+
+              <div id="handshake-link-box" class="hidden" style="margin-top: 0.75rem;">
+                <div style="display: flex; gap: 0.5rem; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 0.4rem 0.5rem; align-items: center;">
+                  <input type="text" id="handshake-url-input" readonly style="flex: 1; background: transparent; border: none; outline: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.65rem;" value="">
+                  <button id="btn-copy-handshake" class="btn-action" style="padding: 0.25rem 0.5rem; font-size: 0.6rem; margin: 0; cursor: pointer;">COPY</button>
+                </div>
+                <div class="margin-top-xs" style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.65rem;">
+                  <span class="status-indicator online" id="handshake-status-dot" style="width: 6px; height: 6px; background-color: var(--accent-amber);"></span>
+                  <span id="handshake-status-text" style="color: var(--text-muted);">Awaiting target connection...</span>
+                </div>
+              </div>
+            </div>
+            
+            <p class="helper-text-disclaimer">
+              <strong>Simulated Network Telemetry:</strong> Precise live GPS hardware queries on remote mobile devices require active, client-consented authentication. This interface displays country registry records, E.164 dial codes, and simulates carrier BTS (base station) triangulation routing.
+            </p>
+          </div>
+        </div>
+
+        <!-- GPS / Device Location Card -->
+        <div class="card detail-card" id="gps-card">
+          <div class="card-header border-cyan">
+            <div class="title-with-icon">
+              <svg class="icon icon-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <h2>Precision GPS / Device Geolocation</h2>
+            </div>
+            <span class="pill pill-cyan" id="gps-accuracy-pill">Inactive</span>
+          </div>
+
+          <div class="card-content">
+            <!-- Activate Button -->
+            <div class="beacon-trigger-zone" id="trigger-zone">
+              <button id="btn-activate-gps" class="btn-primary-glow">
+                <span class="btn-ripple"></span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="radar-svg"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+                <span>ACTIVATE PRECISION BEACON (±10m)</span>
+              </button>
+              <p class="helper-text">Requires browser location permission for high-accuracy satellite/Wi-Fi positioning.</p>
+            </div>
+
+            <!-- GPS Results (Hidden initially, shown when active) -->
+            <div class="gps-results-box hidden" id="gps-results">
+              <div class="details-grid">
+                <div class="detail-item">
+                  <span class="detail-label">Exact Latitude</span>
+                  <span class="detail-val font-mono" id="gps-lat">—</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Exact Longitude</span>
+                  <span class="detail-val font-mono" id="gps-lng">—</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Uncertainty Radius</span>
+                  <span class="detail-val value-highlight-cyan" id="gps-accuracy">—</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Altitude / Speed</span>
+                  <span class="detail-val" id="gps-extra">—</span>
+                </div>
+              </div>
+
+              <!-- Quick action links -->
+              <div class="action-links-row">
+                <a href="#" target="_blank" id="lnk-google-maps" class="btn-action">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  <span>Google Maps</span>
+                </a>
+                <a href="#" target="_blank" id="lnk-osm" class="btn-action">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  <span>OpenStreetMap</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Precision Comparison Card -->
+        <div class="card detail-card" id="comparison-card">
+          <div class="card-header border-purple">
+            <div class="title-with-icon">
+              <svg class="icon icon-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+              <h2>Precision Comparison</h2>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="comparison-bar-container">
+              <div class="comp-label-row">
+                <span>Network Database Accuracy</span>
+                <span>±50,000m</span>
+              </div>
+              <div class="comp-bar-bg">
+                <div class="comp-bar-fill ip-bar" style="width: 100%;"></div>
+              </div>
+              
+              <div class="comp-label-row margin-top-sm">
+                <span>GPS & Wi-Fi Beacon Accuracy</span>
+                <span id="comp-gps-val" class="text-cyan">Pending Activation</span>
+              </div>
+              <div class="comp-bar-bg">
+                <div class="comp-bar-fill gps-bar" id="comp-gps-bar" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="offset-metric-box">
+              <div class="metric-col">
+                <span class="metric-label">INTEGRATED DRIFT</span>
+                <span class="metric-value" id="val-drift">—</span>
+              </div>
+              <div class="metric-col">
+                <span class="metric-label">PRECISION GAIN</span>
+                <span class="metric-value text-green" id="val-precision-gain">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right side: Leaflet Map Visualizer -->
+      <section class="map-panel">
+        <div class="card map-card">
+          <div class="map-overlay-controls">
+            <button class="btn-map-control active" id="btn-focus-all">Fit View</button>
+            <button class="btn-map-control" id="btn-focus-ip">Center IP</button>
+            <button class="btn-map-control" id="btn-focus-gps" disabled>Center GPS</button>
+            <button class="btn-map-control" id="btn-focus-phone" disabled>Center Phone</button>
+          </div>
+          
+          <div id="map"></div>
+          
+          <!-- Map Status Indicator overlay -->
+          <div class="map-badge" id="map-status-overlay">
+            <div class="pulse-indicator pulse-amber" id="map-status-pulse"></div>
+            <span id="map-status-text">Mapping IP Gateway...</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom details / metadata console -->
+    <footer class="app-footer">
+      <div class="footer-block">
+        <strong>TECHNICAL ADVISORY</strong>
+        <p>IP addresses are leased blocks owned by ISPs. Lookups resolve to the ISP routing station, not your physical structure. The browser's Geolocation API queries local Wi-Fi router MAC addresses and device GPS chips, returning the physical location matching standard mapping coordinates within a 10m radius.</p>
+      </div>
+      <div class="footer-meta">
+        <span>Engine: v1.0.0</span>
+        <span>•</span>
+        <span>Protocol: W3C Geolocation</span>
+      </div>
+    </footer>
+
+    <!-- Target Handshake Screen (shown only when ?session= parameter is present) -->
+    <main id="target-handshake-screen" class="hidden" style="display: flex; align-items: center; justify-content: center; min-height: 70vh; padding: 2rem 1rem;">
+      <div class="card" style="max-width: 480px; width: 100%; text-align: center; padding: 2rem; background: rgba(20, 20, 25, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-radius: 12px;">
+        
+        <!-- Radar icon -->
+        <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; position: relative; display: flex; align-items: center; justify-content: center;">
+          <div class="gps-marker-pulse pulse-green" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(52, 211, 153, 0.15); animation: tower-pulse-anim 2s infinite;"></div>
+          <div style="width: 48px; height: 48px; background: rgba(52, 211, 153, 0.1); border: 1.5px solid var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+        </div>
+
+        <h2 style="font-family: var(--font-header); font-size: 1.6rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; letter-spacing: -0.5px;">GeoPulse AI Handshake</h2>
+        <span class="pill pill-green-glow" id="handshake-portal-session" style="font-family: var(--font-mono); font-size: 0.7rem; padding: 0.25rem 0.6rem; border-radius: 4px; display: inline-block; margin-bottom: 1rem;">SESSION: GP-XXXXXX</span>
+        
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem;">
+          A tracking node is requesting an active telemetry link. Permitting the secure handshake will share your device's physical GPS coordinates to plot on the dashboard in real-time.
+        </p>
+
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; text-align: left;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 0.4rem;">
+            <span style="color: var(--text-muted);">Target MSISDN:</span>
+            <span style="font-family: var(--font-mono); color: var(--text-primary); font-weight: 500;" id="handshake-portal-phone">+91 XXXXX XXXXX</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.72rem;">
+            <span style="color: var(--text-muted);">Requested Channel:</span>
+            <span style="font-family: var(--font-mono); color: var(--accent-green); font-weight: 500;">W3C High-Accuracy GPS</span>
+          </div>
+        </div>
+
+        <button id="btn-target-authorize" class="btn-activate" style="width: 100%; padding: 0.9rem; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; background: var(--accent-green); border: none; color: #0c0d12; border-radius: 8px; transition: all 0.2s; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.3); outline: none;">
+          Authorize Handshake
+        </button>
+
+        <div id="target-active-sharing" class="hidden" style="margin-top: 1.25rem;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <span class="status-indicator online pulse-green" style="width: 8px; height: 8px; background-color: var(--accent-green); box-shadow: 0 0 8px var(--accent-green);"></span>
+            <span style="font-size: 0.75rem; color: var(--accent-green); font-weight: 600; text-transform: uppercase;">Streaming GPS Live</span>
+          </div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);" id="target-coords-debug">
+            Lat: --, Lng: --
+          </div>
+          <p style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.4;">
+            Keep this browser tab open. Your exact coordinates are being broadcasted directly to the tracking console map.
+          </p>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Application JS -->
+</body>
+</html>
