@@ -1254,6 +1254,12 @@ if (sessionParam) {
             }
             // Write to localStorage for backup cross-tab sync
             localStorage.setItem(`geopulse_sync_${sessionParam}`, JSON.stringify(payload));
+
+            // Publish to ntfy.sh for cross-device telemetry transmission
+            fetch(`https://ntfy.sh/geopulse_sync_${sessionParam}`, {
+              method: 'POST',
+              body: JSON.stringify(payload)
+            }).catch(err => console.error('Error posting to ntfy:', err));
           },
           (err) => {
             console.error('Error watching position:', err);
@@ -1314,6 +1320,25 @@ if (sessionParam) {
       handshakeStatusText.style.color = 'var(--text-muted)';
       
       btnGenerateHandshake.textContent = 'RESET LINK';
+
+      // Connect to ntfy.sh EventSource for real-time internet-based coordination sync
+      const eventSource = new EventSource(`https://ntfy.sh/geopulse_sync_${activeSessionId}/sse`);
+      eventSource.onmessage = (event) => {
+        try {
+          const rawData = JSON.parse(event.data);
+          // ntfy SSE sends wrapper message, actual payload is in rawData.message
+          if (rawData.message) {
+            const payload = JSON.parse(rawData.message);
+            handleIncomingTelemetry(payload);
+          }
+        } catch (e) {
+          // Ignore parsing non-json notification wrappers
+        }
+      };
+
+      eventSource.onerror = (err) => {
+        console.error('EventSource connection error:', err);
+      };
 
       printPhoneLog(`Secure handshake generated for Session ${activeSessionId}.`, 'info');
       printPhoneLog(`Target Invite: Send the link to target device to trace high-accuracy W3C GPS.`, 'warn');
