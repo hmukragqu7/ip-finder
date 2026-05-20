@@ -99,6 +99,8 @@ const btnFocusTower = document.getElementById('btn-focus-tower');
 const phoneValue = document.getElementById('phone-value');
 const phoneCarrier = document.getElementById('phone-carrier');
 const phoneCountry = document.getElementById('phone-country');
+const phoneMcc = document.getElementById('phone-mcc');
+const phoneMnc = document.getElementById('phone-mnc');
 const phoneType = document.getElementById('phone-type');
 const phoneLocalTime = document.getElementById('phone-local-time');
 const phoneConsoleLogs = document.getElementById('phone-console-logs');
@@ -812,6 +814,8 @@ function resolvePhoneDetails(digits) {
   let details = {
     country: 'Global Routing Zone',
     carrier: 'Primary Mobile Switching Center',
+    mcc: '000',
+    mnc: '000',
     lat: 20.0,
     lng: 0.0,
     timezone: 'UTC',
@@ -825,9 +829,16 @@ function resolvePhoneDetails(digits) {
   if (isIndia) {
     const mobilePart = digits.startsWith('91') ? digits.substring(2) : digits;
     const circle = getIndianCircle(mobilePart);
+    let mnc = '45'; // Default Airtel
+    if (circle.carrier.toLowerCase().includes('jio')) mnc = '20';
+    else if (circle.carrier.toLowerCase().includes('idea') || circle.carrier.toLowerCase().includes('vodafone') || circle.carrier.toLowerCase().includes('vi')) mnc = '22';
+    else if (circle.carrier.toLowerCase().includes('bsnl')) mnc = '34';
+
     details = {
       country: `India (${circle.name})`,
       carrier: circle.carrier,
+      mcc: '404',
+      mnc: mnc,
       lat: circle.lat,
       lng: circle.lng,
       timezone: 'Asia/Kolkata',
@@ -838,7 +849,9 @@ function resolvePhoneDetails(digits) {
     details = {
       country: 'United States',
       carrier: 'Verizon Wireless Node (US-MSC-31)',
-      lat: 37.7749, // San Francisco area (better visualization)
+      mcc: '310',
+      mnc: '12',
+      lat: 37.7749, // San Francisco area
       lng: -122.4194,
       timezone: 'America/Los_Angeles',
       offset: -8,
@@ -848,6 +861,8 @@ function resolvePhoneDetails(digits) {
     details = {
       country: 'United Kingdom',
       carrier: 'Vodafone UK Exchange (UK-MSC-14)',
+      mcc: '234',
+      mnc: '15',
       lat: 51.5074, 
       lng: -0.1278,
       timezone: 'Europe/London',
@@ -858,6 +873,8 @@ function resolvePhoneDetails(digits) {
     details = {
       country: 'Germany',
       carrier: 'Deutsche Telekom Exchange (DE-MSC-02)',
+      mcc: '262',
+      mnc: '01',
       lat: 52.5200, 
       lng: 13.4050,
       timezone: 'Europe/Berlin',
@@ -868,6 +885,8 @@ function resolvePhoneDetails(digits) {
     details = {
       country: 'France',
       carrier: 'Orange SA Gateway (FR-MSC-09)',
+      mcc: '208',
+      mnc: '01',
       lat: 48.8566, 
       lng: 2.3522,
       timezone: 'Europe/Paris',
@@ -878,6 +897,8 @@ function resolvePhoneDetails(digits) {
     details = {
       country: 'Australia',
       carrier: 'Telstra Telecom Center (AU-MSC-06)',
+      mcc: '505',
+      mnc: '01',
       lat: -33.8688, 
       lng: 151.2093,
       timezone: 'Australia/Sydney',
@@ -888,6 +909,8 @@ function resolvePhoneDetails(digits) {
     details = {
       country: 'Japan',
       carrier: 'NTT Docomo Node (JP-MSC-11)',
+      mcc: '440',
+      mnc: '10',
       lat: 35.6762, 
       lng: 139.6503,
       timezone: 'Asia/Tokyo',
@@ -898,6 +921,8 @@ function resolvePhoneDetails(digits) {
     details = {
       country: 'China',
       carrier: 'China Mobile Center (CN-MSC-05)',
+      mcc: '460',
+      mnc: '00',
       lat: 39.9042, 
       lng: 116.4074,
       timezone: 'Asia/Shanghai',
@@ -908,6 +933,8 @@ function resolvePhoneDetails(digits) {
     details = {
       country: 'Brazil',
       carrier: 'Vivo Brasil Core (BR-MSC-22)',
+      mcc: '724',
+      mnc: '06',
       lat: -23.5505, 
       lng: -46.6333,
       timezone: 'America/Sao_Paulo',
@@ -918,6 +945,8 @@ function resolvePhoneDetails(digits) {
     details = {
       country: 'South Africa',
       carrier: 'MTN Gateway Station (ZA-MSC-04)',
+      mcc: '655',
+      mnc: '10',
       lat: -26.2041, 
       lng: 28.0473,
       timezone: 'Africa/Johannesburg',
@@ -933,6 +962,8 @@ function resolvePhoneDetails(digits) {
     details = {
       country: 'International Carrier Routing',
       carrier: `ROUTING-GATEWAY-B${checksum}`,
+      mcc: '901',
+      mnc: String(checksum % 100).padStart(2, '0'),
       lat: pseudoLat,
       lng: pseudoLng,
       timezone: 'UTC',
@@ -1009,6 +1040,8 @@ function queryPhoneMetadata(phoneNumber) {
   
   phoneCarrier.textContent = 'Resolving...';
   phoneCountry.textContent = 'Resolving...';
+  phoneMcc.textContent = 'Resolving...';
+  phoneMnc.textContent = 'Resolving...';
   phoneType.textContent = 'Resolving...';
   phoneLocalTime.textContent = '—';
   
@@ -1039,6 +1072,8 @@ function queryPhoneMetadata(phoneNumber) {
     printPhoneLog(`Gateway Carrier: ${details.carrier} detected.`, 'info');
     phoneCarrier.textContent = details.carrier.replace(/\s*Node.*|\s*Exchange.*|\s*Gateway.*|\s*Telecom.*/gi, '');
     phoneCountry.textContent = details.country;
+    phoneMcc.textContent = details.mcc;
+    phoneMnc.textContent = details.mnc;
     phoneType.textContent = details.type;
     startPhoneClock(details.timezone);
   }, 800);
